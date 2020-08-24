@@ -1,0 +1,8 @@
+{
+	"parent": "block/cube_bottom_top",
+	"textures": {
+		"bottom": "solidarity:block/limestone_bottom",
+		"top": "solidarity:block/limestone_top",
+		"side": "solidarity:block/limestone_side"
+	}
+}

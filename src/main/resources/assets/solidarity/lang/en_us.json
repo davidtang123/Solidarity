@@ -1,0 +1,11 @@
+{
+  "item.solidarity.slag": "Slag - CaSiO4",
+  "block.solidarity.limestone": "Limestone - CaCO3",
+  "item.solidarity.limestone": "Limestone - CaCO3",
+
+  "block.solidarity.mbe30_block_registry_name": "MBE30 Inventory Basic Block",
+  "container.solidarity.mbe30_container_registry_name": "MBE30 Inventory Basic GUI",
+
+  "block.solidarity.mbe31_block_inventory_furnace_registry_name": "MBE31 Inventory Furnace Block",
+  "container.solidarity.mbe31_container_registry_name": "MBE31 Inventory Furnace GUI"
+}
