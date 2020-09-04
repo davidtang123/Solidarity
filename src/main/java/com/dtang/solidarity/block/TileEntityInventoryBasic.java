@@ -129,7 +129,7 @@ public class TileEntityInventoryBasic extends TileEntity implements INamedContai
      */
     @Override
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container.minecraftbyexample.mbe30_container_registry_name");
+        return new TranslationTextComponent("container.solidarity.mbe30_container_registry_name");
     }
 
     /**

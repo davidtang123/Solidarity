@@ -85,13 +85,13 @@ public class StartupCommon
         tileEntityTypeMBE30 = TileEntityType.Builder.create(TileEntityInventoryBasic::new, blockInventoryBasic)
                 .build(null);
         // you probably don't need a datafixer --> null should be fine
-        tileEntityTypeMBE30.setRegistryName("minecraftbyexample:mbe30_tile_entity_type_registry_name");
+        tileEntityTypeMBE30.setRegistryName("solidarity:mbe30_tile_entity_type_registry_name");
         event.getRegistry().register(tileEntityTypeMBE30);
 
         tileEntityTypeMBE31 = TileEntityType.Builder.create(TileEntityFurnace::new, blockFurnace)
                 .build(null);
         // you probably don't need a datafixer --> null should be fine
-        tileEntityTypeMBE31.setRegistryName("minecraftbyexample:mbe31_tile_entity_type_registry_name");
+        tileEntityTypeMBE31.setRegistryName("solidarity:mbe31_tile_entity_type_registry_name");
         event.getRegistry().register(tileEntityTypeMBE31);
     }
 

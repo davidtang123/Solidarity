@@ -409,7 +409,7 @@ public class TileEntityFurnace extends TileEntity implements INamedContainerProv
      */
     @Override
     public ITextComponent getDisplayName() {
-        return new TranslationTextComponent("container.minecraftbyexample.mbe31_container_registry_name");
+        return new TranslationTextComponent("container.solidarity.mbe31_container_registry_name");
     }
 
     /**

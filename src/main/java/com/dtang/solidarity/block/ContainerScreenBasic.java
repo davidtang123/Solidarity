@@ -71,5 +71,5 @@ public class ContainerScreenBasic extends ContainerScreen<ContainerBasic> {
     }
 
     // This is the resource location for the background image for the GUI
-    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("minecraftbyexample", "textures/gui/mbe30_inventory_basic_bg.png");
+    private static final ResourceLocation BACKGROUND_TEXTURE = new ResourceLocation("solidarity", "textures/gui/mbe30_inventory_basic_bg.png");
 }

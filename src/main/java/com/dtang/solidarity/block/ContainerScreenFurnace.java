@@ -128,5 +128,5 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
     }
 
     // This is the resource location for the background image
-    private static final ResourceLocation TEXTURE = new ResourceLocation("minecraftbyexample", "textures/gui/mbe31_inventory_furnace_bg.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation("solidarity", "textures/gui/mbe31_inventory_furnace_bg.png");
 }
