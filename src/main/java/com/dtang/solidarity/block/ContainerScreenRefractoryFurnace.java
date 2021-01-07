@@ -10,46 +10,34 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * User: brandon3055
- * Date: 06/01/2015
- *
- * ContainerScreenFurnace is a gui similar to that of a furnace. It has a progress bar and a burn time indicator.
- * Both indicators have mouse over text
- *
- * The Screen is drawn in several layers, most importantly:
- * Background - renderBackground() - eg a grey fill
- * Background texture - drawGuiContainerBackgroundLayer() (eg the frames for the slots)
- * Foreground layer - typically text labels
- * renderHoveredToolTip - for tool tips when the mouse is hovering over something of interest
- */
-public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
+public class ContainerScreenRefractoryFurnace extends ContainerScreen<ContainerRefractoryFurnace> {
 
-    private ContainerFurnace containerFurnace;
-    public ContainerScreenFurnace(ContainerFurnace containerFurnace, PlayerInventory playerInventory, ITextComponent title) {
+    private ContainerRefractoryFurnace containerFurnace;
+    public ContainerScreenRefractoryFurnace(ContainerRefractoryFurnace containerFurnace, PlayerInventory playerInventory, ITextComponent title) {
         super(containerFurnace, playerInventory, title);
         this.containerFurnace = containerFurnace;
 
         // Set the width and height of the gui.  Should match the size of the texture!
         xSize = 176;
-        ySize = 207;
+        ySize = 165;
+
+        System.out.println("Initialized custom furnace screen");
     }
 
     // some [x,y] coordinates of graphical elements
-    final int COOK_BAR_XPOS = 49;
-    final int COOK_BAR_YPOS = 60;
-    final int COOK_BAR_ICON_U = 0;   // texture position of white arrow icon [u,v]
-    final int COOK_BAR_ICON_V = 207;
-    final int COOK_BAR_WIDTH = 80;
+    final int COOK_BAR_XPOS = 50;
+    final int COOK_BAR_YPOS = 30;
+    final int COOK_BAR_ICON_U = 176;   // texture position of white arrow icon [u,v]
+    final int COOK_BAR_ICON_V = 15;
+    final int COOK_BAR_WIDTH = 32;
     final int COOK_BAR_HEIGHT = 17;
 
-    final int FLAME_XPOS = 54;
-    final int FLAME_YPOS = 80;
+    final int FLAME_XPOS = 30;
+    final int FLAME_YPOS = 40;
     final int FLAME_ICON_U = 176;   // texture position of flame icon [u,v]
     final int FLAME_ICON_V = 0;
     final int FLAME_WIDTH = 14;
     final int FLAME_HEIGHT = 14;
-    final int FLAME_X_SPACING = 18;
 
     public void render(int mouseX, int mouseY, float partialTicks) {
         this.renderBackground();
@@ -61,7 +49,7 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
         if (!this.minecraft.player.inventory.getItemStack().isEmpty()) return;  // no tooltip if the player is dragging something
 
-        List<String> hoveringText = new ArrayList<String>();
+        List<String> hoveringText = new ArrayList<>();
 
         // If the mouse is over the progress bar add the progress bar hovering text
         if (isInRect(guiLeft + COOK_BAR_XPOS, guiTop + COOK_BAR_YPOS, COOK_BAR_WIDTH, COOK_BAR_HEIGHT, mouseX, mouseY)){
@@ -71,11 +59,9 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
         }
 
         // If the mouse is over one of the burn time indicators, add the burn time indicator hovering text
-        for (int i = 0; i < containerFurnace.FUEL_SLOTS_COUNT; ++i) {
-            if (isInRect(guiLeft + FLAME_XPOS + FLAME_X_SPACING * i, guiTop + FLAME_YPOS, FLAME_WIDTH, FLAME_HEIGHT, mouseX, mouseY)) {
-                hoveringText.add("Fuel Time:");
-                hoveringText.add(containerFurnace.secondsOfFuelRemaining(i) + "s");
-            }
+        if (isInRect(guiLeft + FLAME_XPOS, guiTop + FLAME_YPOS, FLAME_WIDTH, FLAME_HEIGHT, mouseX, mouseY)) {
+            hoveringText.add("Fuel Time:");
+            hoveringText.add(containerFurnace.secondsOfFuelRemaining() + "s");
         }
 
         // If hoveringText is not empty draw the hovering text.  Otherwise, use vanilla to render tooltip for the slots
@@ -106,12 +92,10 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
                 (int)(cookProgress * COOK_BAR_WIDTH), COOK_BAR_HEIGHT);
 
         // draw the fuel remaining bar for each fuel slot flame
-        for (int i = 0; i < containerFurnace.FUEL_SLOTS_COUNT; ++i) {
-            double burnRemaining = containerFurnace.fractionOfFuelRemaining(i);
+            double burnRemaining = containerFurnace.fractionOfFuelRemaining();
             int yOffset = (int)((1.0 - burnRemaining) * FLAME_HEIGHT);
-            blit(guiLeft + FLAME_XPOS + FLAME_X_SPACING * i, guiTop + FLAME_YPOS + yOffset,
+            blit(guiLeft + FLAME_XPOS, guiTop + FLAME_YPOS + yOffset,
                     FLAME_ICON_U, FLAME_ICON_V + yOffset, FLAME_WIDTH, FLAME_HEIGHT - yOffset);
-        }
     }
 
     @Override
@@ -128,5 +112,5 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
     }
 
     // This is the resource location for the background image
-    private static final ResourceLocation TEXTURE = new ResourceLocation("solidarity", "textures/gui/mbe31_inventory_furnace_bg.png");
+    private static final ResourceLocation TEXTURE = new ResourceLocation("solidarity", "textures/gui/refractory_furnace_bg.png");
 }

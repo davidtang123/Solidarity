@@ -1,4 +1,4 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.exampleitems;
 
 import com.dtang.solidarity.StartupCommon;
 import net.minecraft.entity.player.PlayerEntity;

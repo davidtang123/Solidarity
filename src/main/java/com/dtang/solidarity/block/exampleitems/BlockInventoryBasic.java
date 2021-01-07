@@ -1,4 +1,4 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.exampleitems;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

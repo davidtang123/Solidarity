@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "x x",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "tag": "solidarity:refractory_mat"
+    }
+  },
+  "result": {
+    "item": "solidarity:refractory_furnace"
+  }
+}

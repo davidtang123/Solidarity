@@ -1,5 +1,6 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.exampleitems;
 
+import com.dtang.solidarity.block.exampleitems.TileEntityFurnace;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IIntArray;
 

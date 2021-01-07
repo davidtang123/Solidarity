@@ -1,6 +1,8 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.exampleitems;
 
 import com.dtang.solidarity.StartupCommon;
+import com.dtang.solidarity.block.exampleitems.ChestContents;
+import com.dtang.solidarity.block.exampleitems.ContainerBasic;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.InventoryHelper;

@@ -7,5 +7,8 @@
   "container.solidarity.mbe30_container_registry_name": "MBE30 Inventory Basic GUI",
 
   "block.solidarity.mbe31_block_inventory_furnace_registry_name": "MBE31 Inventory Furnace Block",
-  "container.solidarity.mbe31_container_registry_name": "MBE31 Inventory Furnace GUI"
+  "container.solidarity.mbe31_container_registry_name": "MBE31 Inventory Furnace GUI",
+
+  "block.solidarity.refractory_furnace": "Refractory Furnace",
+  "container.solidarity.containertype_refractory_furnace": "Refractory Furnace GUI"
 }

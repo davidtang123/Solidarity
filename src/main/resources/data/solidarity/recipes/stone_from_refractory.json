@@ -1,0 +1,15 @@
+{
+  "type": "solidarity:refractory_smelting",
+  "ingredient": [
+    {"item": "minecraft:cobblestone"},
+    {"item": "minecraft:stone_brick"},
+    {"item": "minecraft:stone_button"},
+    {"item": "minecraft:stone_pressure_plate"},
+    {"item": "minecraft:chiseled_stone_bricks"},
+    {"item": "minecraft:mossy_cobblestone"},
+    {"item": "minecraft:mossy_stone_bricks"}
+  ],
+  "result": "minecraft:stone",
+  "experience": 0,
+  "cookingtime": 1000
+}
