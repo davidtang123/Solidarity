@@ -1,6 +1,6 @@
 package com.dtang.solidarity.block.exampleitems;
 
-import com.dtang.solidarity.StartupCommon;
+import com.dtang.solidarity.init.ModContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -71,8 +71,8 @@ public class ContainerBasic extends Container {
      * @param chestContents the inventory stored in the chest
      */
     private ContainerBasic(int windowID, PlayerInventory playerInventory, ChestContents chestContents) {
-        super(StartupCommon.containerTypeContainerBasic, windowID);
-        if (StartupCommon.containerTypeContainerBasic == null)
+        super(ModContainers.INVBASIC.get(), windowID);
+        if (ModContainers.INVBASIC.get() == null)
             throw new IllegalStateException("Must initialise containerBasicContainerType before constructing a ContainerBasic!");
 
         PlayerInvWrapper playerInventoryForge = new PlayerInvWrapper(playerInventory);  // wrap the IInventory in a Forge IItemHandler.

@@ -1,6 +1,6 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.Machine;
 
-import com.dtang.solidarity.StartupCommon;
+import com.dtang.solidarity.init.ModContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -8,7 +8,6 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.MinecartItem;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
@@ -18,22 +17,22 @@ import org.apache.logging.log4j.Logger;
  * User: David Tang
  * Date: 1/5/2021
  */
-public class ContainerRefractoryFurnace extends Container {
+public class RefractoryFurnaceContainer extends Container {
 
-    public static ContainerRefractoryFurnace createContainerServerSide(int windowID, PlayerInventory playerInventory,
-                                                            FurnaceContents furnaceContents,
+    public static RefractoryFurnaceContainer createContainerServerSide(int windowID, PlayerInventory playerInventory,
+                                                                       FurnaceContents furnaceContents,
                                                                        AdvancedFurnaceStateData furnaceStateData) {
-        return new ContainerRefractoryFurnace(windowID, playerInventory, furnaceContents, furnaceStateData);
+        return new RefractoryFurnaceContainer(windowID, playerInventory, furnaceContents, furnaceStateData);
     }
 
-    public static ContainerRefractoryFurnace createContainerClientSide(int windowID, PlayerInventory playerInventory, net.minecraft.network.PacketBuffer extraData) {
+    public static RefractoryFurnaceContainer createContainerClientSide(int windowID, PlayerInventory playerInventory, net.minecraft.network.PacketBuffer extraData) {
         FurnaceContents furnaceContents = FurnaceContents.createForClientSideContainer(7);
         AdvancedFurnaceStateData furnaceStateData = new AdvancedFurnaceStateData();
 
         // on the client side there is no parent TileEntity to communicate with, so we:
         // 1) use dummy inventories and furnace state data (tracked ints)
         // 2) use "do nothing" lambda functions for canPlayerAccessInventory and markDirty
-        return new ContainerRefractoryFurnace(windowID, playerInventory, furnaceContents, furnaceStateData);
+        return new RefractoryFurnaceContainer(windowID, playerInventory, furnaceContents, furnaceStateData);
     }
 
     // must assign a slot index to each of the slots used by the GUI.
@@ -76,11 +75,11 @@ public class ContainerRefractoryFurnace extends Container {
     // i.e. invPlayer slots 0 - 35 (hotbar 0 - 8 then main inventory 9 to 35)
     // and furnace: inputZone slots 0 - 4, outputZone slots 0 - 4, fuelZone 0 - 3
 
-    public ContainerRefractoryFurnace(int windowID, PlayerInventory invPlayer,
+    public RefractoryFurnaceContainer(int windowID, PlayerInventory invPlayer,
                                       FurnaceContents furnaceContents,
                                       AdvancedFurnaceStateData furnaceStateData) {
-        super(StartupCommon.containerTypeRefractoryFurnace, windowID);
-        if (StartupCommon.containerTypeRefractoryFurnace == null)
+        super(ModContainers.REFRACTORY.get(), windowID);
+        if (ModContainers.REFRACTORY.get() == null)
             throw new IllegalStateException("Must initialise containerType.ContainerRefractoryFurnace before constructing a ContainerRefractoryFurnace!");
         this.furnaceContents = furnaceContents;
         this.furnaceStateData = furnaceStateData;
@@ -139,8 +138,6 @@ public class ContainerRefractoryFurnace extends Container {
 
         SlotZone sourceZone = SlotZone.getZoneFromIndex(sourceSlotIndex);
 
-        System.out.println(sourceZone+","+sourceSlotIndex);
-
         switch (sourceZone) {
             case FURNACE_ZONE: // Moving from furnace, identify slot.
                 int furnaceIndex = sourceSlotIndex - FIRST_FURNACE_SLOT_INDEX;
@@ -148,7 +145,6 @@ public class ContainerRefractoryFurnace extends Container {
                     // taking out of the output zone - try the hotbar first, then main inventory.  fill from the end.
                     case 4: case 5: case 6:
                         successfulTransfer = mergeInto(SlotZone.PLAYER_HOTBAR, sourceItemStack, true);
-                        System.out.println("Put into hotbar?" + successfulTransfer);
                         if (!successfulTransfer) {
                             successfulTransfer = mergeInto(SlotZone.PLAYER_MAIN_INVENTORY, sourceItemStack, true);
                         }
@@ -158,7 +154,6 @@ public class ContainerRefractoryFurnace extends Container {
                         break;
                     case 0: case 1: case 2: case 3:// any input
                         successfulTransfer = mergeInto(SlotZone.PLAYER_MAIN_INVENTORY, sourceItemStack, false);
-                        System.out.println("Put into inventory?" + successfulTransfer);
                         if (!successfulTransfer) {
                             successfulTransfer = mergeInto(SlotZone.PLAYER_HOTBAR, sourceItemStack, false);
                         }
@@ -170,10 +165,10 @@ public class ContainerRefractoryFurnace extends Container {
                 if(sourceItemStack.getItem() == Items.PAPER){
                     successfulTransfer = mergeIntoFurnaceSlot(PAPER_INDEX, sourceItemStack);
                 }
-                if (!TileEntityRefractoryFurnace.getSmeltingResultForItem(world, sourceItemStack).isEmpty()) { // smeltable -> add to input
+                if (!RefractoryFurnaceTileEntity.getSmeltingResultsForItem(world, sourceItemStack).isEmpty()) { // smeltable -> add to input
                     successfulTransfer = mergeIntoFurnaceSlot(INPUT_INDEX, sourceItemStack);
                 }
-                if (!successfulTransfer && TileEntityRefractoryFurnace.getItemBurnTime(world, sourceItemStack) > 0) { //burnable -> add to fuel from the bottom slot first
+                if (!successfulTransfer && RefractoryFurnaceTileEntity.getItemBurnTime(world, sourceItemStack) > 0) { //burnable -> add to fuel from the bottom slot first
                     successfulTransfer = mergeIntoFurnaceSlot(FUEL_INDEX, sourceItemStack);
                 }
                 if (!successfulTransfer) {  // didn't fit into furnace; try player main inventory or hotbar
@@ -228,7 +223,7 @@ public class ContainerRefractoryFurnace extends Container {
      * @return fraction remaining, between 0.0 - 1.0
      */
     public double fractionOfFuelRemaining() {
-        if (furnaceStateData.burnTimeInitialValue <= 0 ) return 0;
+        if (furnaceStateData.burnTimeRemaining <= 0) return 0;
         double fraction = furnaceStateData.burnTimeRemaining / (double)furnaceStateData.burnTimeInitialValue;
         return MathHelper.clamp(fraction, 0.0, 1.0);
     }
@@ -264,7 +259,7 @@ public class ContainerRefractoryFurnace extends Container {
         // if this function returns false, the player won't be able to insert the given item into this slot
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return TileEntityRefractoryFurnace.isItemValidForFuelSlot(stack);
+            return RefractoryFurnaceTileEntity.isItemValidForFuelSlot(stack);
         }
     }
 
@@ -277,7 +272,7 @@ public class ContainerRefractoryFurnace extends Container {
         // if this function returns false, the player won't be able to insert the given item into this slot
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return TileEntityRefractoryFurnace.isItemValidForInputSlot(stack);
+            return RefractoryFurnaceTileEntity.isItemValidForInputSlot(stack);
         }
     }
 
@@ -302,7 +297,7 @@ public class ContainerRefractoryFurnace extends Container {
         // if this function returns false, the player won't be able to insert the given item into this slot
         @Override
         public boolean isItemValid(ItemStack stack) {
-            return TileEntityRefractoryFurnace.isItemValidForOutputSlot(stack);
+            return RefractoryFurnaceTileEntity.isItemValidForOutputSlot(stack);
         }
     }
 

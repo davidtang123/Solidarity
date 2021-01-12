@@ -1,4 +1,4 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.Machine;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -10,18 +10,16 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerScreenRefractoryFurnace extends ContainerScreen<ContainerRefractoryFurnace> {
+public class RefractoryFurnaceContainerScreen extends ContainerScreen<RefractoryFurnaceContainer> {
 
-    private ContainerRefractoryFurnace containerFurnace;
-    public ContainerScreenRefractoryFurnace(ContainerRefractoryFurnace containerFurnace, PlayerInventory playerInventory, ITextComponent title) {
+    private RefractoryFurnaceContainer containerFurnace;
+    public RefractoryFurnaceContainerScreen(RefractoryFurnaceContainer containerFurnace, PlayerInventory playerInventory, ITextComponent title) {
         super(containerFurnace, playerInventory, title);
         this.containerFurnace = containerFurnace;
 
         // Set the width and height of the gui.  Should match the size of the texture!
         xSize = 176;
         ySize = 165;
-
-        System.out.println("Initialized custom furnace screen");
     }
 
     // some [x,y] coordinates of graphical elements
@@ -91,11 +89,10 @@ public class ContainerScreenRefractoryFurnace extends ContainerScreen<ContainerR
         blit(guiLeft + COOK_BAR_XPOS, guiTop + COOK_BAR_YPOS, COOK_BAR_ICON_U, COOK_BAR_ICON_V,
                 (int)(cookProgress * COOK_BAR_WIDTH), COOK_BAR_HEIGHT);
 
-        // draw the fuel remaining bar for each fuel slot flame
-            double burnRemaining = containerFurnace.fractionOfFuelRemaining();
-            int yOffset = (int)((1.0 - burnRemaining) * FLAME_HEIGHT);
-            blit(guiLeft + FLAME_XPOS, guiTop + FLAME_YPOS + yOffset,
-                    FLAME_ICON_U, FLAME_ICON_V + yOffset, FLAME_WIDTH, FLAME_HEIGHT - yOffset);
+        double burnRemaining = containerFurnace.fractionOfFuelRemaining();
+        int yOffset = (int)((1.0 - burnRemaining) * FLAME_HEIGHT);
+        blit(guiLeft + FLAME_XPOS, guiTop + FLAME_YPOS + yOffset,
+                FLAME_ICON_U, FLAME_ICON_V + yOffset, FLAME_WIDTH, FLAME_HEIGHT - yOffset);
     }
 
     @Override

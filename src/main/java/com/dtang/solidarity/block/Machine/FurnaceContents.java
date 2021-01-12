@@ -1,4 +1,4 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.Machine;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;

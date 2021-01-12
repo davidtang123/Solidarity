@@ -1,4 +1,4 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.Machine;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.IIntArray;
@@ -67,9 +67,9 @@ public class AdvancedFurnaceStateData implements IIntArray {
         } else if (index == COOKTIME_TOTAL_INDEX) {
             return cookTimeTotal;
         } else if (index == BURNTIME_INITIAL_VALUE_INDEX) {
-            return BURNTIME_INITIAL_VALUE_INDEX;
+            return burnTimeInitialValue;
         } else {
-            return BURNTIME_REMAINING_INDEX;
+            return burnTimeRemaining;
         }
     }
 
@@ -94,7 +94,6 @@ public class AdvancedFurnaceStateData implements IIntArray {
 
     private void validateIndex(int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= size()) {
-            System.out.println("Index"+index+","+size());
             throw new IndexOutOfBoundsException("Index out of bounds:"+index);
         }
     }

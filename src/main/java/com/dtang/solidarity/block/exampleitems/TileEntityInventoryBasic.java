@@ -1,8 +1,6 @@
 package com.dtang.solidarity.block.exampleitems;
 
-import com.dtang.solidarity.StartupCommon;
-import com.dtang.solidarity.block.exampleitems.ChestContents;
-import com.dtang.solidarity.block.exampleitems.ContainerBasic;
+import com.dtang.solidarity.init.ModTileEntities;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.InventoryHelper;
@@ -30,7 +28,7 @@ public class TileEntityInventoryBasic extends TileEntity implements INamedContai
 
     public TileEntityInventoryBasic()
     {
-        super(StartupCommon.tileEntityTypeMBE30);
+        super(ModTileEntities.INVBASIC.get());
         chestContents = ChestContents.createForTileEntity(NUMBER_OF_SLOTS,
                 this::canPlayerAccessInventory, this::markDirty);
     }

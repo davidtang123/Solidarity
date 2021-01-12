@@ -32,8 +32,6 @@ public class ContainerScreenFurnace extends ContainerScreen<ContainerFurnace> {
         // Set the width and height of the gui.  Should match the size of the texture!
         xSize = 176;
         ySize = 207;
-
-        System.out.println("Initialize example furnace");
     }
 
     // some [x,y] coordinates of graphical elements

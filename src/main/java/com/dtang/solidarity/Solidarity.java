@@ -1,5 +1,6 @@
 package com.dtang.solidarity;
 
+import com.dtang.solidarity.init.*;
 import net.minecraft.block.Block;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -13,6 +14,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
+
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(Solidarity.MOD_ID)
 public class Solidarity
@@ -21,6 +24,9 @@ public class Solidarity
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public static final int maxPowderStackSize = 16;
+    public static final int maxGasTankStackSize = 16;
 
     // get a reference to the event bus for this mod;  Registration events are fired on this bus.
     public static IEventBus MOD_EVENT_BUS;
@@ -33,7 +39,27 @@ public class Solidarity
         //ModItems.ITEMS.register(MOD_EVENT_BUS);
         //ModBlocks.BLOCKS.register(MOD_EVENT_BUS);
 
-        MOD_EVENT_BUS.register(StartupCommon.class);
+        //MOD_EVENT_BUS.register(ModBlocks.class);
+        //MOD_EVENT_BUS.register(ModItems.class);
+        //MOD_EVENT_BUS.register(ModContainers.class);
+        //MOD_EVENT_BUS.register(ModTileEntities.class);
+        //MOD_EVENT_BUS.register(ModRecipeSerializers.class);
+
+        //ModBlocks.register();
+        ModBlocks.BLOCKS.register(MOD_EVENT_BUS);
+        ModItems.ITEMS.register(MOD_EVENT_BUS);
+        //ModSurfaceBuilders.SURFACE_BUILDERS.register(MOD_EVENT_BUS);
+        //ModEnchantments.ENCHANTMENTS.register(MOD_EVENT_BUS);
+        //ModEffects.EFFECTS.register(MOD_EVENT_BUS);
+        //ModPotions.POTIONS.register(MOD_EVENT_BUS);
+        //ModParticleTypes.PARTICLE_TYPES.register(MOD_EVENT_BUS);
+        ModTileEntities.TILE_ENTITY_TYPES.register(MOD_EVENT_BUS);
+        //ModEntityTypes.ENTITY_TYPES.register(MOD_EVENT_BUS);
+        ModContainers.CONTAINERS.register(MOD_EVENT_BUS);
+        //ModSoundEvents.SOUND_EVENTS.register(MOD_EVENT_BUS);
+        ModRecipeSerializers.RECIPE_SERIALIZERS.register(MOD_EVENT_BUS);
+
+
         DistExecutor.runWhenOn(Dist.CLIENT, () -> Solidarity::registerClientOnlyEvents);
     }
 

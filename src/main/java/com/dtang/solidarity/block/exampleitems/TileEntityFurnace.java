@@ -1,6 +1,6 @@
 package com.dtang.solidarity.block.exampleitems;
 
-import com.dtang.solidarity.StartupCommon;
+import com.dtang.solidarity.init.ModTileEntities;
 import com.dtang.solidarity.util.SetBlockStateFlag;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,7 +50,7 @@ public class TileEntityFurnace extends TileEntity implements INamedContainerProv
     private final FurnaceStateData furnaceStateData = new FurnaceStateData();
 
     public TileEntityFurnace(){
-        super(StartupCommon.tileEntityTypeMBE31);
+        super(ModTileEntities.INVFURNACE.get());
         fuelZoneContents = FurnaceZoneContents.createForTileEntity(FUEL_SLOTS_COUNT,
                 this::canPlayerAccessInventory, this::markDirty);
         inputZoneContents = FurnaceZoneContents.createForTileEntity(INPUT_SLOTS_COUNT,

@@ -117,7 +117,6 @@ public class BlockInventoryFurnace extends ContainerBlock
             NetworkHooks.openGui(serverPlayerEntity, namedContainerProvider, (packetBuffer)->{});
             // (packetBuffer)->{} is just a do-nothing because we have no extra data to send
         }
-        System.out.println("Interacted with example furnace");
         return ActionResultType.SUCCESS;
     }
 

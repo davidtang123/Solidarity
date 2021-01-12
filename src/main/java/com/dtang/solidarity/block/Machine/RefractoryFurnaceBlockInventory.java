@@ -1,21 +1,14 @@
-package com.dtang.solidarity.block;
+package com.dtang.solidarity.block.Machine;
 
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.*;
-import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -24,21 +17,21 @@ import net.minecraft.block.AbstractFurnaceBlock;
 
 import javax.annotation.Nullable;
 
-public class BlockInventoryRefractoryFurnace extends AbstractFurnaceBlock
+public class RefractoryFurnaceBlockInventory extends AbstractFurnaceBlock
 {
     //public static final DirectionProperty FACING;
     //public static final BooleanProperty LIT;
 
-    public BlockInventoryRefractoryFurnace()
+    public RefractoryFurnaceBlockInventory()
     {
         super(Block.Properties.create(Material.ROCK)
         );
         this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(LIT, false));
     }
 
-    //public int getLightValue(BlockState p_149750_1_) {
-    //    return (Boolean)p_149750_1_.get(LIT) ? super.getLightValue(p_149750_1_) : 0;
-    //}
+    public int getLightValue(BlockState p_149750_1_) {
+        return p_149750_1_.get(LIT) ? super.getLightValue(p_149750_1_) : 0;
+    }
 
     // ---------------------
 
@@ -50,7 +43,7 @@ public class BlockInventoryRefractoryFurnace extends AbstractFurnaceBlock
     @Nullable
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
-        return new TileEntityRefractoryFurnace();
+        return new RefractoryFurnaceTileEntity();
     }
 
     @Override
@@ -101,8 +94,8 @@ public class BlockInventoryRefractoryFurnace extends AbstractFurnaceBlock
     public void onReplaced(BlockState state, World world, BlockPos blockPos, BlockState newState, boolean isMoving) {
         if (state.getBlock() != newState.getBlock()) {
             TileEntity tileentity = world.getTileEntity(blockPos);
-            if (tileentity instanceof TileEntityRefractoryFurnace) {
-                TileEntityRefractoryFurnace tileEntityFurnace = (TileEntityRefractoryFurnace)tileentity;
+            if (tileentity instanceof RefractoryFurnaceTileEntity) {
+                RefractoryFurnaceTileEntity tileEntityFurnace = (RefractoryFurnaceTileEntity)tileentity;
                 tileEntityFurnace.dropAllContents(world, blockPos);
             }
 //      worldIn.updateComparatorOutputLevel(pos, this);  if the inventory is used to set redstone power for comparators

@@ -1,6 +1,6 @@
 package com.dtang.solidarity.block.exampleitems;
 
-import com.dtang.solidarity.StartupCommon;
+import com.dtang.solidarity.init.ModContainers;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -87,8 +87,8 @@ public class ContainerFurnace extends Container {
                             FurnaceZoneContents outputZoneContents,
                             FurnaceZoneContents fuelZoneContents,
                             FurnaceStateData furnaceStateData) {
-        super(StartupCommon.containerTypeContainerFurnace, windowID);
-        if (StartupCommon.containerTypeContainerFurnace == null)
+        super(ModContainers.INVFURNACE.get(), windowID);
+        if (ModContainers.INVFURNACE.get() == null)
             throw new IllegalStateException("Must initialise containerTypeContainerFurnace before constructing a ContainerFurnace!");
         this.inputZoneContents = inputZoneContents;
         this.outputZoneContents = outputZoneContents;
