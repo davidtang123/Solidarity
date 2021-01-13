@@ -55,10 +55,12 @@ public class RefractoryFurnaceSerializer
                 primaryOutput = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
             } else {
                 String s1 = JSONUtils.getString(json, "result");
+                int ct = JSONUtils.getInt(json, "count", 1);
                 ResourceLocation resourcelocation = new ResourceLocation(s1);
                 primaryOutput = new ItemStack((IItemProvider)Registry.ITEM.getValue(resourcelocation).orElseThrow(() -> {
                     return new IllegalStateException("Item: " + s1 + " does not exist");
-                }));
+                }), ct);
+
             }
 
             ItemStack gasOutput = ItemStack.EMPTY;

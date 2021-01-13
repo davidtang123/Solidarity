@@ -4,6 +4,8 @@
     {"item": "minecraft:iron_ore"}
   ],
   "result": "minecraft:iron_ingot",
+  "count": 2,
+  "gas": "solidarity:gas_tank_co2",
   "temperature": 1200,
-  "cookingtime": 2000
+  "cookingtime": 435
 }

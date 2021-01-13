@@ -48,7 +48,6 @@ public class ModItems {
     public static final RegistryObject<Item> GAS_TANK = ITEMS.register("gas_tank",
             () -> new Item(PropertiesGeneric));
 
-    //TODO: Currently doesn't have proper gas tank container
     private static final Item.Properties PropertiesGasTank = new Item.Properties().group(solidarityGroup)//solidarityGroup)
             .maxStackSize(1);
 

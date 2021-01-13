@@ -17,8 +17,9 @@ import net.minecraft.world.World;
 //specific heat of andesite is 0.7kJ/kg/K. Magma temp ~= 1300K. Density 2500kg/m3
 //Example2: 1m3 Stone = 2500*0.7kJ/K * 1300 + 2500 kg * 300kJ/kg
 // = 2,275,000kJ + 750,000 kJ ->3,000MJ
-//Each charcoal provides 6000MJ, at 20% efficiency = 1200 MJ.
-
+//Each charcoal provides 6000MJ, at 20% efficiency = 1200 MJ, yields 360 ticks
+//Iron ore: 5.1kg per ingot, 130MJ per Ingot, + melt stone. Two ingots for consistency sake makes
+//3260MJ. 2.72charcoal=435 ticks
 
 
 //Based on ShapedRecipe

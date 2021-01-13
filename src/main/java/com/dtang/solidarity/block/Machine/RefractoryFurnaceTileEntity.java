@@ -229,7 +229,7 @@ public class RefractoryFurnaceTileEntity extends SolidarityFurnaceTileEntity imp
     // Return true if the given stack is allowed to be inserted in the given slot
     public static boolean isItemValidForFuelSlot(ItemStack itemStack)
     {
-        return (FurnaceTileEntity.isFuel(itemStack) && itemStack.getBurnTime() >= 20*6);//Must be at least as efficient
+        return (FurnaceTileEntity.isFuel(itemStack) && net.minecraftforge.common.ForgeHooks.getBurnTime(itemStack) >= 1200);//Must be at least as efficient as logs
     }
 
     // returns the number of ticks the given item will burn. Returns 0 if the given item is not a valid fuel
