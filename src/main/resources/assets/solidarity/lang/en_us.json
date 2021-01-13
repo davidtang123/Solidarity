@@ -1,7 +1,19 @@
 {
-  "item.solidarity.slag": "Slag - CaSiO4",
+
   "block.solidarity.limestone": "Limestone - CaCO3",
   "item.solidarity.limestone": "Limestone - CaCO3",
+
+  "item.solidarity.slag": "Slag - CaSiO4",
+  "item.solidarity.quicklime": "Quicklime - CaO",
+  "item.solidarity.fly_ash": "Fly Ash",
+  "item.solidarity.wood_ash": "Wood Ash",
+  "item.solidarity.potash": "Potash (Potassium Carbonate) - K2CO3",
+  "item.solidarity.soda_ash": "Soda Ash (Sodium Carbonate) - Na2CO3",
+  "item.solidarity.gas_tank": "Gas Tank",
+  "item.solidarity.gas_tank_co2": "Carbon Dioxide - CO2",
+  "item.solidarity.gas_tank_so2": "Sulfur Dioxide - SO2",
+  "item.solidarity.gas_tank_si_fumes": "Silica Fumes",
+
 
   "block.solidarity.mbe30_block_registry_name": "MBE30 Inventory Basic Block",
   "container.solidarity.mbe30_container_registry_name": "MBE30 Inventory Basic GUI",

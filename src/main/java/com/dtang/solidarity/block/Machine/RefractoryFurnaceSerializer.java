@@ -76,10 +76,13 @@ public class RefractoryFurnaceSerializer
                 }
             }
 
+            //Defaults to 100 degrees celsius, requires at least burning potential of stick
+            int temp = JSONUtils.getInt(json, "temperature", 100);
+
             //Use of technology does not produce experience, aka magic
             //float f = JSONUtils.getFloat(json, "experience", 0.0F);
-            int i = JSONUtils.getInt(json, "cookingtime", this.default_cooktime);
-            return this.factory.create(id, group, primaryInput, primaryOutput, gasOutput, i);
+            int cooktime = JSONUtils.getInt(json, "cookingtime", this.default_cooktime);
+            return this.factory.create(id, group, primaryInput, primaryOutput, gasOutput, temp, cooktime);
         }
     }
 
@@ -89,8 +92,9 @@ public class RefractoryFurnaceSerializer
         ItemStack primaryOutput = buffer.readItemStack();
         ItemStack gasOutput = buffer.readItemStack();
         //float f = buffer.readFloat();
-        int i = buffer.readVarInt();
-        return this.factory.create(id, group, primaryInput, primaryOutput, gasOutput, i);
+        int temp = buffer.readVarInt();//temperature, not temporary
+        int cooktime = buffer.readVarInt();
+        return this.factory.create(id, group, primaryInput, primaryOutput, gasOutput, temp, cooktime);
     }
 
     public void write(PacketBuffer buffer, T recipe) {
@@ -99,10 +103,11 @@ public class RefractoryFurnaceSerializer
         buffer.writeItemStack(recipe.primaryOutput);
         buffer.writeItemStack(recipe.gasOutput);
         //buffer.writeFloat(recipe.experience);
+        buffer.writeVarInt(recipe.temperature);
         buffer.writeVarInt(recipe.cookTime);
     }
 
     public interface IFactory<T extends RefractoryFurnaceRecipe> {
-        T create(ResourceLocation id, String group, Ingredient primaryInput, ItemStack primaryOutput, ItemStack gasOutput, int cookTime);
+        T create(ResourceLocation id, String group, Ingredient primaryInput, ItemStack primaryOutput, ItemStack gasOutput, int temperature, int cookTime);
     }
 }

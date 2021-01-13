@@ -2,7 +2,7 @@ package com.dtang.solidarity.init;
 
 import com.dtang.solidarity.Solidarity;
 import com.dtang.solidarity.block.BlockSimple;
-import com.dtang.solidarity.block.Machine.RefractoryFurnaceBlockInventory;
+import com.dtang.solidarity.block.Machine.SolidarityFurnaceBlock;
 import com.dtang.solidarity.block.exampleitems.BlockInventoryBasic;
 import com.dtang.solidarity.block.exampleitems.BlockInventoryFurnace;
 import net.minecraft.block.Block;
@@ -18,7 +18,8 @@ import java.util.function.Supplier;
 
 public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = new DeferredRegister(ForgeRegistries.BLOCKS, Solidarity.MOD_ID);
-    public static final RegistryObject<Block> LIMESTONE = registerBlockWithDefaultItem("limestone",
+    public static final RegistryObject<Block> LIMESTONE = registerBlockWithDefaultItem(
+            "limestone",
             () -> new BlockSimple(0.6f, 10.0f, 1, ToolType.PICKAXE));
 
     public static final RegistryObject<BlockInventoryBasic> blockInventoryBasic = registerBlockWithDefaultItem(
@@ -27,9 +28,9 @@ public class ModBlocks {
     public static final RegistryObject<BlockInventoryFurnace> blockInventoryFurnace = registerBlockWithDefaultItem(
             "mbe31_block_inventory_furnace_registry_name",
             () -> new BlockInventoryFurnace());
-    public static final RegistryObject<RefractoryFurnaceBlockInventory> blockRefractoryFurnace = registerBlockWithDefaultItem(
+    public static final RegistryObject<SolidarityFurnaceBlock> blockRefractoryFurnace = registerBlockWithDefaultItem(
             "refractory_furnace",
-            () -> new RefractoryFurnaceBlockInventory());
+            () -> new SolidarityFurnaceBlock());
 
     public static void register(){
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());

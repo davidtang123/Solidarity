@@ -1,6 +1,7 @@
 package com.dtang.solidarity.block.Machine;
 
 import com.dtang.solidarity.init.ModContainers;
+import com.dtang.solidarity.init.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
@@ -144,10 +145,11 @@ public class RefractoryFurnaceContainer extends Container {
                 switch (furnaceIndex){
                     // taking out of the output zone - try the hotbar first, then main inventory.  fill from the end.
                     case 4: case 5: case 6:
-                        successfulTransfer = mergeInto(SlotZone.PLAYER_HOTBAR, sourceItemStack, true);
-                        if (!successfulTransfer) {
-                            successfulTransfer = mergeInto(SlotZone.PLAYER_MAIN_INVENTORY, sourceItemStack, true);
-                        }
+                        successfulTransfer = mergeItemStack(sourceItemStack, HOTBAR_FIRST_SLOT_INDEX,
+                                PLAYER_INVENTORY_FIRST_SLOT_INDEX+PLAYER_INVENTORY_SLOT_COUNT+1, true);
+                        //if (!successfulTransfer) {
+                        //    successfulTransfer = mergeInto(SlotZone.PLAYER_MAIN_INVENTORY, sourceItemStack, true);
+                        //}
                         if (successfulTransfer) {  // removing from output means we have just crafted an item -> need to inform
                             sourceSlot.onSlotChange(sourceItemStack, sourceStackBeforeMerge);
                         }
@@ -164,7 +166,10 @@ public class RefractoryFurnaceContainer extends Container {
             case PLAYER_MAIN_INVENTORY: // taking out of inventory - find the appropriate furnace zone
                 if(sourceItemStack.getItem() == Items.PAPER){
                     successfulTransfer = mergeIntoFurnaceSlot(PAPER_INDEX, sourceItemStack);
+                } else if(sourceItemStack.getItem() == ModItems.GAS_TANK.get()){
+                    successfulTransfer = mergeIntoFurnaceSlot(GAS_TANK_INDEX, sourceItemStack);
                 }
+
                 if (!RefractoryFurnaceTileEntity.getSmeltingResultsForItem(world, sourceItemStack).isEmpty()) { // smeltable -> add to input
                     successfulTransfer = mergeIntoFurnaceSlot(INPUT_INDEX, sourceItemStack);
                 }
@@ -213,7 +218,7 @@ public class RefractoryFurnaceContainer extends Container {
 
     private boolean mergeIntoFurnaceSlot(int index, ItemStack sourceItemStack) {
         int trueindex = SlotZone.FURNACE_ZONE.firstIndex + index;
-        return mergeItemStack(sourceItemStack, trueindex, trueindex+1, true);//fillFromEnd order shouldn't matter
+        return mergeItemStack(sourceItemStack, trueindex, trueindex+1, false);//fillFromEnd order shouldn't matter
     }
 
     // -------- methods used by the ContainerScreen to render parts of the display

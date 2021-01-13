@@ -17,12 +17,12 @@ import net.minecraft.block.AbstractFurnaceBlock;
 
 import javax.annotation.Nullable;
 
-public class RefractoryFurnaceBlockInventory extends AbstractFurnaceBlock
+public class SolidarityFurnaceBlock extends AbstractFurnaceBlock
 {
     //public static final DirectionProperty FACING;
     //public static final BooleanProperty LIT;
 
-    public RefractoryFurnaceBlockInventory()
+    public SolidarityFurnaceBlock()
     {
         super(Block.Properties.create(Material.ROCK)
         );

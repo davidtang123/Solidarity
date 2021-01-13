@@ -1,22 +1,19 @@
 package com.dtang.solidarity.block.Machine;
 
+import com.dtang.solidarity.init.ModItems;
 import com.dtang.solidarity.init.ModTileEntities;
 import com.dtang.solidarity.util.SetBlockStateFlag;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.*;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.FurnaceTileEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -24,7 +21,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class RefractoryFurnaceTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
+public class RefractoryFurnaceTileEntity extends SolidarityFurnaceTileEntity implements INamedContainerProvider, ITickableTileEntity {
     public static final int TOTAL_SLOTS_COUNT = 7;
 
     public static final int FUEL_INDEX = 0;
@@ -35,32 +32,10 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
     public static final int ASH_OUTPUT_INDEX = 5;
     public static final int GAS_OUTPUT_INDEX = 6;
 
-    private FurnaceContents furnaceContents;
-    private ItemStack potentialGasOutput;
-
-    private final AdvancedFurnaceStateData furnaceStateData = new AdvancedFurnaceStateData();
-
     public RefractoryFurnaceTileEntity(){
         super(ModTileEntities.REFRACTORY.get());
         furnaceContents = FurnaceContents.createForTileEntity(TOTAL_SLOTS_COUNT,
                 this::canPlayerAccessInventory, this::markDirty);
-    }
-
-    // Return true if the given player is able to use this block. In this case it checks that
-    // 1) the world tileentity hasn't been replaced in the meantime, and
-    // 2) the player isn't too far away from the centre of the block
-    public boolean canPlayerAccessInventory(PlayerEntity player) {
-        if (this.world.getTileEntity(this.pos) != this) return false;
-        final double X_CENTRE_OFFSET = 0.5;
-        final double Y_CENTRE_OFFSET = 0.5;
-        final double Z_CENTRE_OFFSET = 0.5;
-        final double MAXIMUM_DISTANCE_SQ = 8.0 * 8.0;
-
-        return player.getDistanceSq(pos.getX() + X_CENTRE_OFFSET, pos.getY() + Y_CENTRE_OFFSET, pos.getZ() + Z_CENTRE_OFFSET) < MAXIMUM_DISTANCE_SQ;
-    }
-
-    private boolean isBurning() {
-        return furnaceStateData.burnTimeRemaining > 0;
     }
 
     // This method is called every tick to update the tile entity, i.e.
@@ -74,27 +49,27 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
         ItemStack currentlySmeltingItem = getCurrentlySmeltingInputItem();
 
         // if user has changed the input slots, reset the smelting time
-        if (!ItemStack.areItemsEqual(currentlySmeltingItem, currentlySmeltingItemLastTick)) {  // == and != don't work!
+        if (!ItemStack.areItemsEqual(currentlySmeltingItem, currentlySmeltingItemLastTick) ||
+                //Fuel is not hot enough to burn.
+                furnaceStateData.burnTimeInitialValue*4 < getCookTemp(this.world, currentlySmeltingItem)/40) {
             furnaceStateData.cookTime = 0;
         }
         currentlySmeltingItemLastTick = currentlySmeltingItem.copy();
 
         if (!currentlySmeltingItem.isEmpty()) {
             if (furnaceStateData.burnTimeRemaining > 0) {
-                --furnaceStateData.burnTimeRemaining;
+                furnaceStateData.burnTimeRemaining--;
             }
 
             boolean inventoryChanged = false;
 
             if (furnaceStateData.burnTimeRemaining == 0) {
                 ItemStack fuelItemStack = furnaceContents.getStackInSlot(FUEL_INDEX);
-                if (!fuelItemStack.isEmpty() && getItemBurnTime(this.world, fuelItemStack) > 0) {
-                    int burnTimeForItem = getItemBurnTime(this.world, fuelItemStack);
-                    furnaceStateData.burnTimeRemaining = burnTimeForItem;
+                if (!fuelItemStack.isEmpty() && this.getItemBurnTime(this.world, fuelItemStack) > 0) {
+                    int burnTimeForItem = this.getItemBurnTime(this.world, fuelItemStack);
+                    furnaceStateData.burnTimeRemaining = burnTimeForItem;//Burns 4 times as fast=lasts 1/4 the time
                     furnaceStateData.burnTimeInitialValue = burnTimeForItem;
-                    //If paper is in the paper slot and ash output is not empty/is same item, add the relevant ash item to the slot
-                    ItemStack paperItemStack = furnaceContents.getStackInSlot(PAPER_INDEX);
-                    //TODO: Implement ash system
+                    convertToAsh(fuelItemStack);//Add relevant ashes and consume paper
 
                     furnaceContents.decrStackSize(FUEL_INDEX, 1);
                     inventoryChanged = true;
@@ -112,7 +87,7 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
 
             // If fuel is available, keep cooking the item, otherwise start "uncooking" it at double speed
             if (isBurning()) {
-                furnaceStateData.cookTime++;
+                furnaceStateData.cookTime+=4;
             }	else {
                 furnaceStateData.cookTime -= 2;
                 if (furnaceStateData.cookTime < 0)
@@ -133,12 +108,16 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
         // The block update (for renderer) is only required on client side, but the lighting is required on both, since
         //    the client needs it for rendering and the server needs it for crop growth etc
         BlockState currentBlockState = world.getBlockState(this.pos);
-        BlockState newBlockState = currentBlockState.with(RefractoryFurnaceBlockInventory.LIT, isBurning());
+        BlockState newBlockState = currentBlockState.with(SolidarityFurnaceBlock.LIT, isBurning());
         if (!newBlockState.equals(currentBlockState)) {
             final int FLAGS = SetBlockStateFlag.get(SetBlockStateFlag.BLOCK_UPDATE, SetBlockStateFlag.SEND_TO_CLIENTS);
             world.setBlockState(this.pos, newBlockState, FLAGS);
             markDirty();
         }
+    }
+
+    private void convertToAsh(ItemStack fuelItemStack){
+        super.convertToAsh(fuelItemStack, ASH_OUTPUT_INDEX, PAPER_INDEX);
     }
 
     /**
@@ -163,12 +142,15 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
     private ItemStack smeltInputItem(boolean performSmelt)
     {
         ItemStack result = ItemStack.EMPTY;
+        ItemStack gasresult = ItemStack.EMPTY;
 
         // finds the first input slot which is smeltable and whose result fits into an output slot (stacking if possible)
         ItemStack itemStackToSmelt = furnaceContents.getStackInSlot(INPUT_INDEX);
         if (!itemStackToSmelt.isEmpty()) {
             result = getSmeltingResultsForItem(this.world, itemStackToSmelt);
-            if (/*result.isEmpty() ||*/ !willItemStackFit(furnaceContents, MAIN_OUTPUT_INDEX, result)) {
+            gasresult = getGasResultsForItem(this.world,itemStackToSmelt);
+            if ((result.isEmpty() && gasresult.isEmpty())//No real recipe
+                    || !willItemStackFit(furnaceContents, MAIN_OUTPUT_INDEX, result)) {
                 return ItemStack.EMPTY;
             }
         }
@@ -178,49 +160,26 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
             furnaceContents.decrStackSize(INPUT_INDEX, 1);
             furnaceContents.increaseStackSize(MAIN_OUTPUT_INDEX, result);
 
-            //Note, result is overwritten and now represents the gas output
-            result = getGasResultsForItem(this.world, itemStackToSmelt);
-            ItemStack slotToBeOutput = furnaceContents.getStackInSlot(ASH_OUTPUT_INDEX);
-
-            int numToTransfer = 0;//Number of ash to store
-            if(slotToBeOutput.isEmpty() || furnaceContents.getStackInSlot(ASH_OUTPUT_INDEX).isItemEqual(result)){
-                int currentlythere = slotToBeOutput.getCount();//Number of items already there
-
-                //Same item but won't fit,
-                if(!willItemStackFit(furnaceContents, ASH_OUTPUT_INDEX, result) ){
-                    //Get the number to transfer
-
-                    //Same item but won't fit
-                    //Fill what we can, the rest goes into the atmosphere
-
+            if(!gasresult.isEmpty()) {
+                if (willItemStackFit(furnaceContents, GAS_OUTPUT_INDEX, gasresult)) {
+                    //Add the gas to the gas result
+                    furnaceContents.decrStackSize(GAS_TANK_INDEX, 1);
+                    furnaceContents.increaseStackSize(GAS_OUTPUT_INDEX, gasresult);
+                } else {
+                    //TODO:Pollute the atmosphere
+                    if (gasresult.isItemEqual(new ItemStack(ModItems.GAS_TANK_CO2.get()))){
+                        //increase CO2 pollution
+                    } else if(gasresult.isItemEqual(new ItemStack(ModItems.GAS_TANK_SO2.get()))){
+                        //Increase SO2 pollution
+                    } else {
+                        //Eventually, will not be a gas so display error
+                    }
                 }
             }
 
             markDirty();
         }
         return furnaceContents.getStackInSlot(INPUT_INDEX).copy();
-    }
-
-    /**
-     * Will the given ItemStack fully fit into the target slot?
-     * @param furnaceContents
-     * @param slotIndex
-     * @param itemStackOrigin
-     * @return true if the given ItemStack will fit completely; false otherwise
-     */
-    public boolean willItemStackFit(FurnaceContents furnaceContents, int slotIndex, ItemStack itemStackOrigin) {
-        ItemStack itemStackDestination = furnaceContents.getStackInSlot(slotIndex);
-
-        if (itemStackDestination.isEmpty() || itemStackOrigin.isEmpty()) {
-            return true;
-        }
-
-        if (!itemStackOrigin.isItemEqual(itemStackDestination)) {
-            return false;
-        }
-
-        int sizeAfterMerge = itemStackDestination.getCount() + itemStackOrigin.getCount();
-        return sizeAfterMerge <= furnaceContents.getInventoryStackLimit() && sizeAfterMerge <= itemStackDestination.getMaxStackSize();
     }
 
     // returns the smelting result for the given stack. Returns ItemStack.EMPTY if the given stack can not be smelted
@@ -235,12 +194,6 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
         Optional<RefractoryFurnaceRecipe> matchingRecipe = getMatchingRecipeForInput(world, primaryInput);
         if (!matchingRecipe.isPresent()) return ItemStack.EMPTY;
         return matchingRecipe.get().getGasResult();
-    }
-
-    // returns the number of ticks the given item will burn. Returns 0 if the given item is not a valid fuel
-    public static int getItemBurnTime(World world, ItemStack stack)
-    {
-        return net.minecraftforge.common.ForgeHooks.getBurnTime(stack);
     }
 
     // gets the recipe which matches the given input, or Missing if none.
@@ -262,54 +215,30 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
         //Not quite sure what the above line means, but my environment tells me it's functionally the same as:
         //if (!matchingRecipe.isPresent()) return 0;
         //return matchingRecipe.get().getCookTime();
+    }/**
+     * Gets the cooking time for this recipe input
+     * @param world
+     * @param itemStack the input item to be smelted
+     * @return cooking time (ticks) or 0 if no matching recipe
+     */
+    public static int getCookTemp(World world, ItemStack itemStack) {
+        Optional<RefractoryFurnaceRecipe> matchingRecipe = getMatchingRecipeForInput(world, itemStack);
+        return matchingRecipe.map(RefractoryFurnaceRecipe::getCookTemperature).orElse(0);
     }
 
     // Return true if the given stack is allowed to be inserted in the given slot
-    // Unlike the vanilla furnace, we allow anything to be placed in the fuel slots
-    static public boolean isItemValidForFuelSlot(ItemStack itemStack)
+    public static boolean isItemValidForFuelSlot(ItemStack itemStack)
     {
-        return true;
+        return (FurnaceTileEntity.isFuel(itemStack) && itemStack.getBurnTime() >= 20*6);//Must be at least as efficient
     }
 
-    // Return true if the given stack is allowed to be inserted in the given slot
-    // Unlike the vanilla furnace, we allow anything to be placed in the input slots
-    static public boolean isItemValidForInputSlot(ItemStack itemStack)
+    // returns the number of ticks the given item will burn. Returns 0 if the given item is not a valid fuel
+    public static int getItemBurnTime(World world, ItemStack stack)
     {
-        return true;
+        return net.minecraftforge.common.ForgeHooks.getBurnTime(stack)/4;//Everything burns at 4x the speed
     }
 
-    // Return true if the given stack is allowed to be inserted in the given slot
-    static public boolean isItemValidForOutputSlot(ItemStack itemStack)
-    {
-        return false;
-    }
-
-    //------------------------------
-    private final String FURNACE_SLOTS_NBT = "furnaceSlots";
-
-    // This is where you save any data that you don't want to lose when the tile entity unloads
-    // In this case, it saves the state of the furnace (burn time etc) and the itemstacks stored in the fuel, input, and output slots
-    @Override
-    public CompoundNBT write(CompoundNBT parentNBTTagCompound)
-    {
-        super.write(parentNBTTagCompound); // The super call is required to save and load the tile's location
-
-        furnaceStateData.putIntoNBT(parentNBTTagCompound);
-        parentNBTTagCompound.put(FURNACE_SLOTS_NBT, furnaceContents.serializeNBT());
-
-        /*
-        * How many times the recipe has been used
-        parentNBTTagCompound.putShort("RecipesUsedSize", (short)this.field_214022_n.size());
-        int i = 0;
-
-        for(Iterator var3 = this.field_214022_n.entrySet().iterator(); var3.hasNext(); ++i) {
-            Map.Entry<ResourceLocation, Integer> entry = (Map.Entry)var3.next();
-            parentNBTTagCompound.putString("RecipeLocation" + i, ((ResourceLocation)entry.getKey()).toString());
-            parentNBTTagCompound.putInt("RecipeAmount" + i, (Integer)entry.getValue());
-        }
-*/
-        return parentNBTTagCompound;
-    }
+    //Write is in SolidarityFurnaceTileEntity
 
     // This is where you load the data that you saved in writeToNBT
     @Override
@@ -325,46 +254,6 @@ public class RefractoryFurnaceTileEntity extends TileEntity implements INamedCon
         if (furnaceContents.getSizeInventory() != TOTAL_SLOTS_COUNT
         )
             throw new IllegalArgumentException("Corrupted NBT: Number of inventory slots did not match expected.");
-    }
-
-    //	// When the world loads from disk, the server needs to send the TileEntity information to the client
-//	//  it uses getUpdatePacket(), getUpdateTag(), onDataPacket(), and handleUpdateTag() to do this
-    @Override
-    @Nullable
-    public SUpdateTileEntityPacket getUpdatePacket()
-    {
-        CompoundNBT updateTagDescribingTileEntityState = getUpdateTag();
-        final int METADATA = 42; // arbitrary.
-        return new SUpdateTileEntityPacket(this.pos, METADATA, updateTagDescribingTileEntityState);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        CompoundNBT updateTagDescribingTileEntityState = pkt.getNbtCompound();
-        handleUpdateTag(updateTagDescribingTileEntityState);
-    }
-
-    /* Creates a tag containing the TileEntity information, used by vanilla to transmit from server to client
-       Warning - although our getUpdatePacket() uses this method, vanilla also calls it directly, so don't remove it.
-     */
-    @Override
-    public CompoundNBT getUpdateTag()
-    {
-        CompoundNBT nbtTagCompound = new CompoundNBT();
-        write(nbtTagCompound);
-        return nbtTagCompound;
-    }
-
-    @Override
-    public void handleUpdateTag(CompoundNBT tag) { read(tag); }
-
-    /**
-     * When this tile entity is destroyed, drop all of its contents into the world
-     * @param world
-     * @param blockPos
-     */
-    public void dropAllContents(World world, BlockPos blockPos) {
-        InventoryHelper.dropInventoryItems(world, blockPos, furnaceContents);
     }
 
     // -------------  The following two methods are used to make the TileEntity perform as a NamedContainerProvider, i.e.

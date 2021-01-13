@@ -10,5 +10,6 @@
     {"item": "minecraft:mossy_stone_bricks"}
   ],
   "result": "minecraft:stone",
-  "cookingtime": 1000
+  "temperature": 1300,
+  "cookingtime": 5600
 }

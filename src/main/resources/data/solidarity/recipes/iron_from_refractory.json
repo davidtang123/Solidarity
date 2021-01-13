@@ -1,0 +1,9 @@
+{
+  "type": "solidarity:refractory_smelting",
+  "ingredient": [
+    {"item": "minecraft:iron_ore"}
+  ],
+  "result": "minecraft:iron_ingot",
+  "temperature": 1200,
+  "cookingtime": 2000
+}

@@ -11,9 +11,12 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -24,9 +27,6 @@ public class Solidarity
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
-
-    public static final int maxPowderStackSize = 16;
-    public static final int maxGasTankStackSize = 16;
 
     // get a reference to the event bus for this mod;  Registration events are fired on this bus.
     public static IEventBus MOD_EVENT_BUS;
@@ -59,6 +59,23 @@ public class Solidarity
         //ModSoundEvents.SOUND_EVENTS.register(MOD_EVENT_BUS);
         ModRecipeSerializers.RECIPE_SERIALIZERS.register(MOD_EVENT_BUS);
 
+        //Remove Recipes
+        /*
+        ForgeRegistry<? extends IRecipeSerializer> recipeRegistry = (ForgeRegistry<? extends IRecipeSerializer>) ForgeRegistries.RECIPE_SERIALIZERS;
+        ArrayList<IRecipeSerializer> recipes = Lists.newArrayList(recipeRegistry.getValues());
+
+        for (IRecipeSerializer r : recipes)
+        {
+
+            FurnaceRecipe::getRecipeOutput;
+            ItemStack output = r.getRecipeOutput();
+            if (output.getItem() == Items.IRON_INGOT)
+            {
+                recipeRegistry.remove(r.getRegistryName());
+                //recipeRegistry.register(DummyRecipe.from(r));
+            }
+        }
+        */
 
         DistExecutor.runWhenOn(Dist.CLIENT, () -> Solidarity::registerClientOnlyEvents);
     }

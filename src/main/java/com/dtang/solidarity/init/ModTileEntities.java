@@ -2,6 +2,8 @@ package com.dtang.solidarity.init;
 
 import com.dtang.solidarity.Solidarity;
 import com.dtang.solidarity.block.Machine.RefractoryFurnaceTileEntity;
+import com.dtang.solidarity.block.exampleitems.TileEntityFurnace;
+import com.dtang.solidarity.block.exampleitems.TileEntityInventoryBasic;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -11,14 +13,14 @@ public class ModTileEntities {
     public static final DeferredRegister<TileEntityType<?>> TILE_ENTITY_TYPES =
             new DeferredRegister(ForgeRegistries.TILE_ENTITIES, Solidarity.MOD_ID);
 
-    public static final RegistryObject<TileEntityType<RefractoryFurnaceTileEntity>> INVBASIC =
+    public static final RegistryObject<TileEntityType<TileEntityInventoryBasic>> INVBASIC =
             TILE_ENTITY_TYPES.register("mbe30_tile_entity_type_registry_name",
-                    () -> TileEntityType.Builder.create(RefractoryFurnaceTileEntity::new,
+                    () -> TileEntityType.Builder.create(TileEntityInventoryBasic::new,
                             ModBlocks.blockInventoryBasic.get()).build(null));
 
-    public static final RegistryObject<TileEntityType<RefractoryFurnaceTileEntity>> INVFURNACE =
+    public static final RegistryObject<TileEntityType<TileEntityFurnace>> INVFURNACE =
             TILE_ENTITY_TYPES.register("mbe31_tile_entity_type_registry_name",
-                    () -> TileEntityType.Builder.create(RefractoryFurnaceTileEntity::new,
+                    () -> TileEntityType.Builder.create(TileEntityFurnace::new,
                             ModBlocks.blockInventoryFurnace.get()).build(null));
 
     public static final RegistryObject<TileEntityType<RefractoryFurnaceTileEntity>> REFRACTORY =

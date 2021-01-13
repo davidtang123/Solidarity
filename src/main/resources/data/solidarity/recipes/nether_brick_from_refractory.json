@@ -1,0 +1,10 @@
+{
+  "type": "solidarity:refractory_smelting",
+  "ingredient": [
+    {"item": "minecraft:netherrack"}
+  ],
+  "result": "minecraft:nether_brick",
+  "gas": "solidarity:gas_tank_si_fumes",
+  "temperature": 1500,
+  "cookingtime": 2000
+}
